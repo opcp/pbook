@@ -285,6 +285,16 @@
   display: flex;
   flex-direction: row-reverse;
 }
+/* 未登入會員橫排  */
+.reviews_BookRow2 {
+  display: flex;
+  flex-direction: row-reverse;
+}
+/* 未登入直排右側分數 */
+.reviews_BookColumnScore2 {
+  display: flex;
+  flex-direction: column;
+}
 /* 直排下方會員 */
 .reviews_BookColumnMember {
   display: flex;
@@ -677,6 +687,7 @@
   .reviews_push {
     margin: 0 0 0 10px;
     font-size: 20px;
+    display: none;
   }
   .reviews_BookColumnScore {
     display: flex;
@@ -687,11 +698,11 @@
   .reviews_BookBuy {
     width: 360px;
     bottom: -165px;
-    right: -17px;
+    right: -18px;
     border-radius: 15px;
   }
   .reviews_BookCase {
-    right: -17px;
+    right: -18px;
     width: 360px;
     border-radius: 15px;
   }
@@ -766,7 +777,7 @@
     margin: 0;
   }
   .reviews_member_text {
-    margin: 0;
+    margin: -30px 0 0 0;
   }
   .reviews_form {
     margin: -30px 0 0 0;
@@ -784,6 +795,18 @@
   .reviews_reply_delete {
     left: 290px;
     top: 35px;
+  }
+  .reviews_BookColumnScore2 {
+    display: none;
+  }
+  .reviews_Login {
+    margin: 0 0 250px 0;
+    position: relative;
+    top: 220px;
+    left: 90px;
+  }
+  .reviews_goLogin {
+    margin: 0;
   }
   /* .phoneTitleHide {
     display: none;

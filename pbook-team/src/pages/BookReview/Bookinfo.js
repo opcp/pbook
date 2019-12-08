@@ -114,7 +114,7 @@ function Bookinfo() {
       setSb({ isSearch: false })
     }
   }
-  const close = ()=>{
+  const close = () => {
     setSb({ isSearch: false })
   }
   // const search_page = (e) => {
@@ -183,7 +183,7 @@ function Bookinfo() {
               className={
                 `reviews_P_button` + ` ` + (i === s ? `reviews_P_button2` : '')
               }
-              // value={i} onClick={search_page} 
+              // value={i} onClick={search_page}
             >
               {i}
             </button>
@@ -281,7 +281,7 @@ function Bookinfo() {
                   <Pagination.Prev className="pageNum" />
                 </LinkContainer>
               )}
-              {pageNum}
+              {pageNum.filter((key, index) => index < 10)}
               {p < Math.ceil(page / 10) && (
                 <LinkContainer to={'/reviews?' + c + 'p=' + (Number(p) + 1)}>
                   <Pagination.Next className="pageNum" />

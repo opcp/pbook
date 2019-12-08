@@ -18,78 +18,6 @@ import Nav from './components/Navbar'
 const All = styled.section`
   background-image: url('../../images/bg.png');
 `
-
-//主要內容外框
-const Main = styled.section`
-  margin: 40px auto -45px auto;
-  width: 1200px;
-`
-
-// 書本外框
-const Book = styled.div`
-  display: flex;
-  margin: 5px 0;
-  height: 300px;
-`
-//橫排
-const BookRow = styled.div`
-  display: flex;
-  flex-direction: row;
-`
-//未登入會員橫排
-const BookRow2 = styled.div`
-  display: flex;
-  flex-direction: row-reverse;
-`
-
-//直排
-const BookColumn = styled.div`
-  display: flex;
-  flex-direction: column;
-`
-
-//直排右側分數
-const BookColumnScore = styled.div`
-  position: relative;
-  bottom: 140px;
-  right: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-`
-
-//未登入直排右側分數
-const BookColumnScore2 = styled.div`
-  display: flex;
-  flex-direction: column;
-`
-
-//直排下方會員
-const BookColumnMember = styled.div`
-  display: flex;
-  margin: 0 0 0 20px;
-  align-items: center;
-  flex-direction: column;
-`
-
-//書本資訊
-const BookInfo = styled.div`
-  margin: 0 0 0 50px;
-  width: 1000px;
-`
-//回復評論外框
-const Review = styled.section`
-  display: flex;
-  width: 1200px;
-  margin: 0 0 3rem 0;
-  border-bottom: 1px dashed #ccc;
-`
-//會員頭像
-const Member = styled.div`
-  width: 100px;
-  height: 100px;
-  margin: 0 0 0 5px;
-`
 //------------------------------------------------------------------------------------------------------
 
 const List = () => {
@@ -417,7 +345,9 @@ const List = () => {
                 <div className="reviews_bookInfo">
                   <h3>{data.name}</h3>
                   <span>作者:</span>
-                  <span className="reviews_author" style={{ opacity: 0.6 }}>{data.author}</span>
+                  <span className="reviews_author" style={{ opacity: 0.6 }}>
+                    {data.author}
+                  </span>
                   <span className="reviews_author">出版社:</span>
                   <span style={{ opacity: 0.6 }}>{data.cp_name}</span>
                   <span className="reviews_author">出版日期:</span>
@@ -485,21 +415,21 @@ const List = () => {
               </form>
             </div>
           ) : (
-            <BookColumnScore2>
+            <div className="reviews_BookColumnScore2">
               <Link to={`/books/information/${urlParams}`}>
                 <button style={{ outline: 0 }} className="reviews_BookBuy">
                   立即購買
                 </button>
               </Link>
-              {/* <BookRow2>
+              <div className="reviews_BookRow2">
                 <BookScoreAndLine List={List} />
-              </BookRow2> */}
+              </div>
               <form onSubmit={addCase}>
                 <button type="submit" className="reviews_BookCase">
                   加入書櫃
                 </button>
               </form>
-            </BookColumnScore2>
+            </div>
           )}
           <h3 className="reviews_push">發表評論</h3>
           <section className="reviews_container">
@@ -544,7 +474,7 @@ const List = () => {
             ) : (
               <form className="reviews_form">
                 <h6 className="reviews_Login">
-                  <a onClick={login} href="#">
+                  <a className="reviews_goLogin" onClick={login} href="#">
                     請登入會員填寫評論
                   </a>
                 </h6>
