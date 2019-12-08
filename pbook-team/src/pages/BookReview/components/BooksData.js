@@ -25,12 +25,12 @@ function BooksData(props) {
     -webkit-box-orient: vertical;
   `
 
-  const { bookInformation } = props
+  const { book } = props
 
   return (
     <>
       <section className="reviews_book_img_f">
-        {bookInformation.map(item => (
+        {book.map(item => (
           <div className="reviews_book_img" key={item.sid}>
             <Link to={'/book_reviews/' + item.sid}>
               <img
@@ -43,7 +43,7 @@ function BooksData(props) {
         ))}
       </section>
       <BookColumn>
-        {bookInformation.map(item => (
+        {book.map(item => (
           <BookInfo key={item.sid}>
             <Link
               style={{ textDecoration: 'none' }}

@@ -36,88 +36,19 @@ const StyledRating = withStyles({
   },
 })(Rating)
 
-const BookScore = ({ callback, callback2 }) => {
-  const [bs, setBs] = useState(() => callback2())
-  const [bookinfo, setBookinfo] = useState(() => callback())
-  useEffect(() => {
-    setBookinfo(callback())
-    setBs(callback2())
-  }, [callback, callback2])
-
-  let fiveStars = [],
-    fourStars = [],
-    threeStars = [],
-    twoStars = [],
-    oneStars = [],
-    max = [],
-    min = [],
-    avg = []
-
+const BookScore = props => {
+  // const [bs, setBs] = useState(() => callback2())
+  // const [bookinfo, setBookinfo] = useState(() => callback())
+  // useEffect(() => {
+  //   setBookinfo(callback())
+  //   setBs(callback2())
+  // }, [callback, callback2])
+  const { book } = props
+  
   const classes = useStyles()
-  function countRate(bs) {
-    for (let j = 1; j <= 1002; j++) {
-      fiveStars[j] = 0
-      fourStars[j] = 0
-      threeStars[j] = 0
-      twoStars[j] = 0
-      oneStars[j] = 0
-      for (let i = 0; i < bs.length; i++) {
-        if (bs[i].book === j) {
-          switch (bs[i].star) {
-            case 5:
-              fiveStars[j]++
-              break
-            case 4:
-              fourStars[j]++
-              break
-            case 3:
-              threeStars[j]++
-              break
-            case 2:
-              twoStars[j]++
-              break
-            case 1:
-              oneStars[j]++
-              break
-            default:
-              break
-          }
-        }
-      }
-    }
-    for (let j = 1; j <= 1002; j++) {
-      avg[j] = (
-        (fiveStars[j] * 5 +
-          fourStars[j] * 4 +
-          threeStars[j] * 3 +
-          twoStars[j] * 2 +
-          oneStars[j]) /
-        (fiveStars[j] +
-          fourStars[j] +
-          threeStars[j] +
-          twoStars[j] +
-          oneStars[j])
-      ).toFixed(1)
-      max[j] = fiveStars[j]
-      min[j] = fiveStars[j]
-      if (fourStars[j] > max[j]) max[j] = fourStars[j]
-      else if (fourStars[j] < min[j]) min[j] = fourStars[j]
-
-      if (threeStars[j] > max[j]) max[j] = threeStars[j]
-      else if (threeStars[j] < min[j]) min[j] = threeStars[j]
-
-      if (twoStars[j] > max[j]) max[j] = twoStars[j]
-      else if (twoStars[j] < min[j]) min[j] = twoStars[j]
-
-      if (oneStars[j] > max[j]) max[j] = oneStars[j]
-      else if (oneStars[j] < min[j]) min[j] = oneStars[j]
-    }
-  }
-  countRate(bs)
-
   return (
     <div className="reviews_right">
-      {bookinfo.map(data => (
+      {book.map(data => (
         <section key={data.sid} className="reviews_sec">
           <div className="d-flex book_star mb-2">
             <div className={classes.root}>
@@ -127,7 +58,7 @@ const BookScore = ({ callback, callback2 }) => {
                   className={classes.margin}
                   variant="determinate"
                   color="secondary"
-                  value={(fiveStars[data.sid] / max[data.sid]) * 100}
+                  value={(data.fiveStars / data.max )* 100}
                 />
               </div>
               <div className="d-flex">
@@ -136,7 +67,7 @@ const BookScore = ({ callback, callback2 }) => {
                   className={classes.margin}
                   variant="determinate"
                   color="secondary"
-                  value={(fourStars[data.sid] / max[data.sid]) * 100}
+                  value={(data.fourStars / data.max) * 100}
                 />
               </div>
               <div className="d-flex">
@@ -145,7 +76,7 @@ const BookScore = ({ callback, callback2 }) => {
                   className={classes.margin}
                   variant="determinate"
                   color="secondary"
-                  value={(threeStars[data.sid] / max[data.sid]) * 100}
+                  value={(data.threeStars / data.max) * 100}
                 />
               </div>
               <div className="d-flex">
@@ -154,7 +85,7 @@ const BookScore = ({ callback, callback2 }) => {
                   className={classes.margin}
                   variant="determinate"
                   color="secondary"
-                  value={(twoStars[data.sid] / max[data.sid]) * 100}
+                  value={(data.twoStars / data.max) * 100}
                 />
               </div>
               <div className="d-flex">
@@ -163,19 +94,19 @@ const BookScore = ({ callback, callback2 }) => {
                   className={classes.margin}
                   variant="determinate"
                   color="secondary"
-                  value={(oneStars[data.sid] / max[data.sid]) * 100}
+                  value={(data.oneStars / data.max) * 100}
                 />
               </div>
             </div>
           </div>
           <div className="reviews_col">
             <span className="reviews_bol">
-              {!isNaN(avg[data.sid]) && avg[data.sid]}
+              {data.avg}
             </span>
             <Box component="fieldset" mt={0} borderColor="transparent">
               <StyledRating
                 name="customized-color"
-                value={avg[data.sid]}
+                value={data.avg}
                 precision={0.1}
                 readOnly
                 size="small"
@@ -183,11 +114,7 @@ const BookScore = ({ callback, callback2 }) => {
               />
             </Box>
             <span>
-              {fiveStars[data.sid] +
-                fourStars[data.sid] +
-                threeStars[data.sid] +
-                twoStars[data.sid] +
-                oneStars[data.sid]}
+              {data.message}
               篇評論
             </span>
           </div>

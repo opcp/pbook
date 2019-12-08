@@ -3,9 +3,9 @@ const mysql = require("mysql");
 const bluebird = require("bluebird");
 const router = express.Router();
 const db = mysql.createConnection({
-  host: "192.168.27.186",
-  user: "root",
-  password: "root",
+  host: "localhost",
+  user: "opcp",
+  password: "opcp2428",
   database: "pbook"
 });
 db.connect(error => {
@@ -39,14 +39,19 @@ router.get("/book_data/:page?/:categories?/:keyword?", (req, res) => {
   let where = " WHERE 1 ";
   if (keyword) {
     keyword = keyword.split("'").join("\\'"); // 避免 SQL injection
-    where += " AND (`vb_books`.`name` LIKE '%" + keyword + "%' OR `vb_books`.`author` LIKE '%" + keyword + "%') ";
+    where +=
+      " AND (`vb_books`.`name` LIKE '%" +
+      keyword +
+      "%' OR `vb_books`.`author` LIKE '%" +
+      keyword +
+      "%') ";
     output.keyword = keyword; //可以在網址看keyword用
   }
   if (categories && categories !== "search") {
     where += " AND `vb_books`.`categories`" + " = " + categories;
     output.categories = categories;
   }
-  
+
   let sql =
     "SELECT COUNT(1) `total` FROM `vb_books` LEFT JOIN `cp_data_list` ON `vb_books`.`publishing` = `cp_data_list`.`sid` LEFT JOIN `vb_ratings` ON `vb_books`.`sid`=`vb_ratings`.`book`" +
     where;
@@ -233,7 +238,8 @@ router.get("/book_info/:sid?", (req, res) => {
     max = [],
     min = [],
     totalStars = [],
-    avg = [];
+    avg = [],
+    message = [];
   const output = {};
   let sid = req.params.sid || "";
   let where = " WHERE 1 ";
@@ -276,8 +282,10 @@ router.get("/book_info/:sid?", (req, res) => {
         twoStars[j] = 0;
         oneStars[j] = 0;
         totalStars[j] = 0;
+        message[j] = 0;
         for (let i = 0; i < output.totalRatings; i++) {
           if (output.rows[j].sid == results[i].sid) {
+            message[j]++;
             switch (results[i].star) {
               case 5:
                 fiveStars[j]++;
@@ -335,6 +343,7 @@ router.get("/book_info/:sid?", (req, res) => {
         output.rows[j].totalStars = totalStars[j];
         output.rows[j].max = max[j];
         output.rows[j].avg = avg[j];
+        output.rows[j].message = message[j];
       }
 
       res.json(output);

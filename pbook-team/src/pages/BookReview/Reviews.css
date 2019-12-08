@@ -7,7 +7,26 @@
   background-image: url('../../images/bg.png');
   /* z-index: -1; */
 }
-
+/* 直排 */
+.reviews_column {
+  display: flex;
+  flex-direction: column;
+}
+.reviews_column2 {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0;
+}
+/* 橫排 */
+.reviews_row {
+  display: flex;
+  flex-direction: row;
+}
+/* 橫排 */
+.reviews_row2 {
+  display: flex;
+  flex-direction: row;
+}
 /* 右側愛心區塊 */
 .reviews_col {
   display: flex;
@@ -201,23 +220,6 @@
   color: black;
   outline: none;
 }
-/* .pagination .page-item .page-link:focus {
-  border-color: #cde2d0;
-  background: #cde2d0;
-  color: white;
-  outline: none;
-  z-index: 2;
-} */
-/* .pagination .page-item :active {
-  background-color: #cde2d0;
-  border-color: #cde2d0;
-  color: white;
-}
-.pagination .page-item :active .page-link {
-  background-color: #cde2d0;
-  border-color: #cde2d0;
-  color: white;
-} */
 .pagination .page-item .pageNum {
   background-color: white !important;
   border-color: #dee2e6 !important;
@@ -283,6 +285,23 @@
   display: flex;
   flex-direction: row-reverse;
 }
+/* 直排下方會員 */
+.reviews_BookColumnMember {
+  display: flex;
+  margin: 0 0 0 20px;
+  flex-direction: column;
+}
+/* 會員頭像 */
+.reviews_MemberIcon {
+  width: 100px;
+  height: 100px;
+  margin: 0 0 0 5px;
+}
+/* 頁面外框 */
+.reviews_Main {
+  margin: 40px auto -45px auto;
+  width: 1200px;
+}
 /* 書評發送鈕 */
 .reviews_submitBtn {
   width: 110px;
@@ -293,6 +312,30 @@
   color: #ffc408;
   outline: none;
   border: none;
+}
+/* 圖片及資訊外框 */
+.reviews_Book {
+  display: flex;
+  margin: 5px 0;
+  height: 300px;
+}
+/* 書本資訊 */
+.reviews_bookInfo {
+  margin: 0 0 0 50px;
+  width: 1000px;
+}
+/* 作者欄 */
+.reviews_author {
+  margin: 0 10px;
+}
+/* 直排右側分數 */
+.reviews_BookColumnScore {
+  position: relative;
+  bottom: 140px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 /* 分數條及愛心平行 */
 .reviews_LineAndScore {
@@ -397,6 +440,13 @@
   border: 1.5px solid #ccc;
   border-radius: 1rem;
   padding: 0.7rem;
+}
+/* 回復評論外框 */
+.reviews_container {
+  display: flex;
+  width: 1200px;
+  margin: 0 0 3rem 0;
+  border-bottom: 1px dashed #ccc;
 }
 
 /* 表單 */
@@ -558,10 +608,184 @@
 
 /* 書評回覆大頭貼 */
 .reviews_memberReply_img {
-  position: absolute;
   border-radius: 50%;
   max-height: 90%;
   max-width: 25%;
   width: 50px;
   height: 50px;
+}
+/* ---------------------------------------------------------------------------------------------------------------- */
+/* 手機RWD */
+@media (max-width: 375px) {
+  .reviews_Main {
+    width: 100%;
+    max-width: 370px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .reviews_list_img {
+    margin: 10px auto;
+  }
+  .reviews_member_icon_times {
+  }
+  .reviews_row2 {
+    position: relative;
+    top: -80px;
+    margin: -60px 0 0 0;
+    flex-direction: column;
+    align-items: flex-end;
+    /* justify-content: flex-end; */
+  }
+  .reviews_recommendBook {
+    width: 100%;
+    max-width: 260px;
+    margin: 0px auto 0 auto;
+    flex-wrap: wrap;
+  }
+  .reviews_recommendText {
+    margin: 350px 0 0 5px;
+    font-size: 20px;
+  }
+  .reviews_recommendBook_img {
+    margin: 0;
+  }
+  .reviews_recommendBookName {
+    margin: 0;
+  }
+  .reviews_Book {
+    width: 100%;
+    max-width: 375px;
+    display: flex;
+    flex-direction: column;
+    margin: 0 0 0px 0;
+  }
+  .reviews_bookInfo {
+    width: 100%;
+    max-width: 340px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: right;
+  }
+  .reviews_info {
+    margin: 10px 0;
+  }
+  .reviews_recommendBook_Link {
+    margin: 5px;
+  }
+  .reviews_push {
+    margin: 0 0 0 10px;
+    font-size: 20px;
+  }
+  .reviews_BookColumnScore {
+    display: flex;
+    flex-direction: column;
+    bottom: 100px;
+    margin: 120px 0 0 0;
+  }
+  .reviews_BookBuy {
+    width: 360px;
+    bottom: -165px;
+    right: -17px;
+    border-radius: 15px;
+  }
+  .reviews_BookCase {
+    right: -17px;
+    width: 360px;
+    border-radius: 15px;
+  }
+  .reviews_container {
+    width: 100%;
+    max-width: 340px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .reviews_MemberIcon {
+    margin: 0;
+  }
+  .reviews_member_img {
+    margin: 10px 0 0 0;
+    max-width: 50%;
+    max-height: 50%;
+  }
+  .reviews_memberReview_img {
+    margin: 10px 0 0 0;
+    max-width: 50%;
+    max-height: 50%;
+  }
+  .reviews_memberReply_img {
+    margin: 4px 0 0 0;
+    width: 40px;
+    height: 40px;
+  }
+  .reviews_reply_form {
+    left: 60px;
+  }
+  .reviews_reply_text {
+    width: 100%;
+    max-width: 310px;
+    margin: 0 auto 15px auto;
+  }
+  .reviews_reply_editText {
+    width: 100%;
+    max-width: 150px;
+  }
+  .reviews_UpdateBtn {
+    margin: 0px 0 10px 200px;
+  }
+  .reviews_text {
+    width: 100%;
+    max-width: 370px;
+  }
+  .reviews_author {
+    margin: 0;
+  }
+  .reviews_textarea {
+    outline: 0;
+    width: 100%;
+    max-width: 320px;
+    min-height: 40px;
+    border: 1.5px solid #ccc;
+    border-radius: 1rem;
+    padding: 0.7rem;
+    margin: 0 auto;
+  }
+  .reviews_crumb {
+    font-size: 10px;
+  }
+  .reviews_reply_view {
+    width: 100%;
+    max-width: 310px;
+  }
+  .reviews_BookColumnMember {
+    margin: 0;
+  }
+  .reviews_push2 {
+    margin: 0;
+  }
+  .reviews_member_text {
+    margin: 0;
+  }
+  .reviews_form {
+    margin: -30px 0 0 0;
+  }
+  .reviews_submitBtn {
+    margin: 0 0 0 10px;
+  }
+  .reviews_reply_edit {
+    left: 290px;
+  }
+  .reviews_reply_cancel {
+    left: 290px;
+    top: 20px;
+  }
+  .reviews_reply_delete {
+    left: 290px;
+    top: 35px;
+  }
+  /* .phoneTitleHide {
+    display: none;
+  } */
 }

@@ -4,10 +4,9 @@ const mysql = require("mysql");
 const bluebird = require("bluebird");
 const router = express.Router();
 const db = mysql.createConnection({
-  host: "192.168.27.186",
-  // host: "localhost",
-  user: "root",
-  password: "root",
+  host: "localhost",
+  user: "opcp",
+  password: "opcp2428",
   database: "pbook"
 });
 db.connect();
@@ -27,52 +26,62 @@ router.get("/categoryBar", (req, res) => {
   });
 });
 //書本內容
-router.get(`/?`, (req, res) => {
-  let c, a, page, s;
-  const urlpart = url.parse(req.url, true);
-  if (urlpart.query.c !== undefined) {
-    c = "=" + urlpart.query.c;
-  } else {
-    c = "";
-  }
+// router.get(`/?`, (req, res) => {
+//   let c, a, page, s;
+//   const urlpart = url.parse(req.url, true);
+//   if (urlpart.query.c !== undefined) {
+//     c = "=" + urlpart.query.c;
+//   } else {
+//     c = "";
+//   }
 
-  if (urlpart.query.a == 1) {
-    a = "page";
-  } else if (urlpart.query.a == 2) {
-    a = "publish_date";
-  } else {
-    a = "fixed_price";
-  }
-  s = urlpart.query.s || "";
+//   if (urlpart.query.a == 1) {
+//     a = "page";
+//   } else if (urlpart.query.a == 2) {
+//     a = "publish_date";
+//   } else {
+//     a = "fixed_price";
+//   }
+//   s = urlpart.query.s || "";
 
-  page = urlpart.query.p || 1;
-  let perPage = 20;
-  let output = {};
-  db.queryAsync(`SELECT COUNT(1) total FROM vb_books WHERE categories ${c}`)
-    .then(results => {
-      output.total = results[0].total;
-      return db.queryAsync(
-        `SELECT vb_books.*,cp_data_list.cp_name FROM vb_books,cp_data_list WHERE categories ${c} AND name LIKE '%${s}%' AND vb_books.publishing = cp_data_list.sid ORDER BY ${a} DESC LIMIT ${(page -
-          1) *
-          perPage},${perPage}`
-      );
-    })
-    .then(results => {
-      output.rows = results;
-      res.json(output);
-    })
-    .catch(error => {
-      console.log(error);
-      res.send(error);
-    });
-  console.log(s);
-});
+//   page = urlpart.query.p || 1;
+//   console.log(page)
+//   let perPage = 20;
+//   let output = {};
+//   db.queryAsync(`SELECT COUNT(1) total FROM vb_books WHERE categories ${c}`)
+//     .then(results => {
+//       output.total = results[0].total;
+//       // return db.queryAsync(
+//       //   `SELECT vb_books.*,cp_data_list.cp_name FROM vb_books,cp_data_list WHERE categories ${c} AND name LIKE '%${s}%' AND vb_books.publishing = cp_data_list.sid ORDER BY ${a} DESC LIMIT ${(page -
+//       //     1) *
+//       //     perPage},${perPage}`
+//       // )
+//       return db.queryAsync(
+//         `SELECT vb_books.*,cp_data_list.cp_name FROM vb_books,cp_data_list WHERE categories ${c} AND name LIKE '%${s}%' AND vb_books.publishing = cp_data_list.sid ORDER BY ${a} DESC LIMIT ${(page -
+//           1) *
+//           perPage},${perPage}`
+//       )
+//     })
+//     .then(results => {
+//       output.rows = results;
+//       res.json(output);
+//     })
+//     .catch(error => {
+//       console.log(error);
+//       res.send(error);
+//     });
+//   console.log(s);
+// });
+
+//ratings
+
+
 //搜尋內容
 router.get("/search_book/?", (req, res) => {
   let search;
   const urlpart = url.parse(req.url, true);
   search = decodeURI(urlpart.search.replace("?", ""));
-  const sql = `SELECT sid,name,author FROM vb_books WHERE name LIKE '%${search}%' OR author LIKE '%${search}%'`;
+  const sql = `SELECT sid,name,author FROM vb_books WHERE name LIKE '%${search}%'`;
   db.query(sql, (error, results) => {
     if (error) {
       return res.send(error);

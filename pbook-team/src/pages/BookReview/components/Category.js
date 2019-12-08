@@ -17,7 +17,7 @@ function Category(props) {
 
   const searchParams = new URLSearchParams(props.location.search)
   const sidFromUrl = +searchParams.get('c')
-
+  const { close } = props
   if (error) return <div>讀取失敗...</div>
   if (!data) return <div>資料讀取中...</div>
 
@@ -34,6 +34,7 @@ function Category(props) {
               <button
                 value={item.sid}
                 key={item.sid}
+                onClick={close}
                 className={
                   `reviews_btn` +
                   ` ` +
@@ -52,6 +53,7 @@ function Category(props) {
             <Link key={item.sid} to={'reviews?c=' + item.sid + '&p=1'}>
               <button
                 value={item.sid}
+                onClick={close}
                 key={item.sid}
                 className={
                   `reviews_btn` +
@@ -71,6 +73,7 @@ function Category(props) {
             <Link key={item.sid} to={'reviews?c=' + item.sid + '&p=1'}>
               <button
                 value={item.sid}
+                onClick={close}
                 key={item.sid}
                 className={
                   `reviews_btn` +

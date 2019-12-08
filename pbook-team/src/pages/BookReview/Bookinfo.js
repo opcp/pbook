@@ -11,19 +11,12 @@ import BookScore from './BookScore/BookScore'
 import BooksData from './components/BooksData'
 import BookSearch from './components/Search'
 import Category from './components/Category'
+import useSWR from 'swr'
 import './Reviews.css'
-import 'react-tabs/style/react-tabs.css'
+
+const fetcher = url => fetch(url).then(r => r.json())
 
 function Bookinfo() {
-  const [bookInformation, setBookInformation] = useState([]) //書籍資料
-  const [array, setArray] = useState(1) //排序方式
-  const [categorys, setCategorys] = useState([])
-  const [page, getPage] = useState()
-  const [bs, setBs] = useState([])
-  const [sb, setSb] = useState({
-    isSearch: false,
-  })
-  //---------------------------------------------------------------------------
   //分頁功能
 
   let pageNum = []
@@ -31,7 +24,8 @@ function Bookinfo() {
     p = 1,
     s1,
     s2,
-    s
+    s,
+    d
   const url = window.location.search.replace('?', '')
   if (url !== '') {
     let urlSplit = url.split('&')
@@ -54,17 +48,30 @@ function Bookinfo() {
   if (c == undefined) {
     c = ''
   }
-
   const searchParams = new URLSearchParams(window.location.search)
   s = +searchParams.get('p') || 1
-  console.log(s)
+  //---------------------------------------------------------------------------
+
+  const [bookInformation, setBookInformation] = useState([]) //搜尋書籍資料
+  const [array, setArray] = useState(1) //排序方式
+  const [page, setPage] = useState()
+  const [word, setWord] = useState('')
+  const [sb, setSb] = useState({
+    isSearch: false,
+  })
+  const { data: book, error: book_error } = useSWR(
+    [`http://localhost:5555/reviews?${c}p=${p}`],
+    fetcher
+  ) //書籍資料
 
   //---------------------------------------------------------------------------
+  if (book_error) return <div>讀取失敗...</div>
+  if (!book) return <div>資料讀取中...</div>
 
   //---------------------------------------------------------------------------
 
   const Main = styled.section`
-    margin: -25px auto;
+    margin: 0px auto;
     width: 1200px;
   `
 
@@ -87,101 +94,116 @@ function Bookinfo() {
     flex-direction: column;
     align-items: center;
   `
-  //書本星數
-  const BookScoreSet = styled.div`
-    width: 350px;
-    height: 250px;
-    margin: 100px auto;
-    border: 1px solid #ccc;
-  `
 
   //---------------------------------------------------------------------
-  useEffect(() => {
-    bookInfo()
-    categoryBar()
-    star()
-  }, [array, c, p])
-
-  const star = async () => {
-    await axios.get('http://localhost:5555/reviews/book_ratings').then(res => {
-      setBs(res.data.data)
-    }, [])
-  }
-
-  const categoryBar = async () => {
-    await axios
-      .get('http://localhost:5555/reviews/categoryBar')
-      .then(res => {
-        let data = res.data.data
-        setCategorys(data)
-      })
-      .catch(error => {
-        console.log(error)
-      })
-  }
-
-  const bookInfo = async e => {
-    if (e == undefined) {
-      e = ''
-    }
-    await axios
-      .get(`http://localhost:5555/reviews/?${c}a=${array}&p=${p}&s=${e}`)
-      .then(res => {
-        setBookInformation(res.data.rows)
-        getPage(Math.ceil(res.data.total / 20))
-        console.log(res.data)
-      })
-      .catch(error => {
-        console.log(error)
-      })
-  }
-
-  for (let i = 1; i <= page; i++) {
-    pageNum.push(
-      <LinkContainer key={i} to={'reviews?' + c + 'p=' + i}>
-        <Pagination.Item>
-          <button
-            className={
-              `reviews_P_button` + ` ` + (i === s ? `reviews_P_button2` : '')
-            }
-          >
-            {i}
-          </button>
-        </Pagination.Item>
-      </LinkContainer>
-    )
-  }
-
-  const callback = useCallback(() => {
-    return bookInformation
-  }, [bookInformation])
-
-  const callback2 = useCallback(() => {
-    return bs
-  }, [bs])
-
-  const callback3 = useCallback(() => {
-    return categorys
-  }, [categorys])
-
   const search_result = e => {
     if (e !== '' && e !== undefined) {
       setSb({ isSearch: true })
       axios
-        .get(`http://localhost:5555/reviews/?${c}a=${array}&p=${p}&s=${e}`)
+        .get(`http://localhost:5555/reviews?p=${p}&s=${e}`)
         .then(res => {
           setBookInformation(res.data.rows)
-
-          console.log(bookInformation)
+          setPage(res.data.totalRows)
+          setWord(e)
+          console.log(res.data)
         })
         .catch(error => {
           console.log(error)
         })
     } else {
       setSb({ isSearch: false })
-      bookInfo()
     }
   }
+  const close = ()=>{
+    setSb({ isSearch: false })
+  }
+  // const search_page = (e) => {
+  //   console.log(e.target.value)
+  //   console.log(s)
+  //   console.log(word)
+  //   axios
+  //     .get(`http://localhost:5555/reviews?s=${word}&p=${s}`)
+  //     .then(res => {
+  //       console.log(res.data)
+  //     })
+  //     .catch(error => {
+  //       console.log(error)
+  //     })
+  // }
+
+  // useEffect(() => {
+  //   bookInfo()
+  //   categoryBar()
+  //   star()
+  // }, [array, c, p])
+
+  // const star = async () => {
+  //   await axios.get('http://localhost:5555/reviews/book_ratings').then(res => {
+  //     setBs(res.data.data)
+  //   }, [])
+  // }
+
+  // const bookInfo = async e => {
+  //   if (e == undefined) {
+  //     e = ''
+  //   }
+  //   await axios
+  //     .get(`http://localhost:5555/reviews/?${c}a=${array}&p=${p}&s=${e}`)
+  //     .then(res => {
+  //       setBookInformation(res.data.rows)
+  //       getPage(Math.ceil(res.data.total / 20))
+  //       console.log(res.data)
+  //     })
+  //     .catch(error => {
+  //       console.log(error)
+  //     })
+  // }
+  if (!sb.isSearch) {
+    for (let i = 1; i <= Math.ceil(book.totalRows / 10); i++) {
+      pageNum.push(
+        <LinkContainer key={i} to={'reviews?' + c + 'p=' + i}>
+          <Pagination.Item>
+            <button
+              className={
+                `reviews_P_button` + ` ` + (i === s ? `reviews_P_button2` : '')
+              }
+            >
+              {i}
+            </button>
+          </Pagination.Item>
+        </LinkContainer>
+      )
+    }
+  } else {
+    for (let i = 1; i <= Math.ceil(page / 10); i++) {
+      pageNum.push(
+        <LinkContainer key={i} to={'reviews?s=' + word + '&p=' + i}>
+          <Pagination.Item>
+            <button
+              className={
+                `reviews_P_button` + ` ` + (i === s ? `reviews_P_button2` : '')
+              }
+              // value={i} onClick={search_page} 
+            >
+              {i}
+            </button>
+          </Pagination.Item>
+        </LinkContainer>
+      )
+    }
+  }
+
+  // const callback = useCallback(() => {
+  //   return book.rows
+  // }, [book.rows])
+
+  // const callback2 = useCallback(() => {
+  //   return bs.data
+  // }, [bs.data])
+
+  // const callback3 = useCallback(() => {
+  //   return categorys
+  // }, [categorys])
 
   return (
     <>
@@ -190,8 +212,8 @@ function Bookinfo() {
           <BookSearch search_result={search_result} />
         </div>
         <Main>
-          <Category callback3={callback3} search_result={search_result} />
-          <OptionBar>
+          <Category close={close} />
+          {/* <OptionBar>
             <select
               onChange={e => {
                 setArray(e.target.value)
@@ -203,16 +225,23 @@ function Bookinfo() {
               <option value="2">上市日期(新>舊)</option>
               <option value="3">暢銷度</option>
             </select>
-          </OptionBar>
+          </OptionBar> */}
 
-          {
+          {!sb.isSearch ? (
             <Book>
-              <BooksData bookInformation={bookInformation} />
+              <BooksData book={book.rows} />
               <BookColumn>
-                <BookScore callback={callback} callback2={callback2} />
+                <BookScore book={book.rows} />
               </BookColumn>
             </Book>
-          }
+          ) : (
+            <Book>
+              <BooksData book={bookInformation} />
+              <BookColumn>
+                <BookScore book={bookInformation} />
+              </BookColumn>
+            </Book>
+          )}
 
           {!sb.isSearch ? (
             <Pagination className="reviews_pagination">
@@ -227,19 +256,45 @@ function Bookinfo() {
                 </LinkContainer>
               )}
               {pageNum}
-              {p < page && (
+              {p < Math.ceil(book.totalRows / 10) && (
                 <LinkContainer to={'/reviews?' + c + 'p=' + (Number(p) + 1)}>
                   <Pagination.Next className="pageNum" />
                 </LinkContainer>
               )}
-              {p < page && (
-                <LinkContainer to={'/reviews?' + c + 'p=' + page}>
+              {p < Math.ceil(book.totalRows / 10) && (
+                <LinkContainer
+                  to={'/reviews?' + c + 'p=' + Math.ceil(book.totalRows / 10)}
+                >
                   <Pagination.Last className="pageNum" />
                 </LinkContainer>
               )}
             </Pagination>
           ) : (
-            ''
+            <Pagination className="reviews_pagination">
+              {p >= 2 && (
+                <LinkContainer to={'/reviews?' + c + 'p=1'}>
+                  <Pagination.First className="pageNum" />
+                </LinkContainer>
+              )}
+              {p >= 2 && (
+                <LinkContainer to={'/reviews?' + c + 'p=' + Number(p - 1)}>
+                  <Pagination.Prev className="pageNum" />
+                </LinkContainer>
+              )}
+              {pageNum}
+              {p < Math.ceil(page / 10) && (
+                <LinkContainer to={'/reviews?' + c + 'p=' + (Number(p) + 1)}>
+                  <Pagination.Next className="pageNum" />
+                </LinkContainer>
+              )}
+              {p < Math.ceil(page / 10) && (
+                <LinkContainer
+                  to={'/reviews?' + c + 'p=' + Math.ceil(page / 10)}
+                >
+                  <Pagination.Last className="pageNum" />
+                </LinkContainer>
+              )}
+            </Pagination>
           )}
         </Main>
       </section>

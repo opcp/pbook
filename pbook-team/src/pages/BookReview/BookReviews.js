@@ -112,7 +112,6 @@ const List = () => {
   })
   //CRUD設定
   const [review, setReview] = useState({
-    id: '',
     sid: '',
     pic: '',
     editReview: '',
@@ -121,6 +120,7 @@ const List = () => {
     star: '1',
     isEdit: false,
   })
+  const [id, getID] = useState()
   //ISBN
   const [ISBN, setISBN] = useState()
   //書評下方顯示欄資料
@@ -146,20 +146,22 @@ const List = () => {
         pic: data.MR_pic,
         nickname: data.MR_nickname,
       })
-      setReview({ ...review, id: data.MR_number })
+      getID(data.MR_number)
       recommend(data.MR_number)
+      console.log(data.MR_number)
     }
   }, [])
-
+  console.log(review.id)
   //書評分頁資料ajax
   const bookList = async () => {
     await axios
-      .get(`http://localhost:5555/reviews/book_reviews/${urlParams}`)
+      .get(`http://localhost:5555/books/book_info/${urlParams}`)
       .then(res => {
-        let data = res.data.data[0]
-        setList(res.data.data)
+        let data = res.data.rows[0]
+        console.log(res.data.rows)
+        setList(res.data.rows)
         setISBN(data.isbn)
-        // setReview({ ...review, isbn: data.isbn, pic: data.pic })
+        setReview({ ...review, isbn: data.isbn, pic: data.pic })
       })
       .catch(error => {
         console.log(error)
@@ -206,9 +208,8 @@ const List = () => {
     replyTxt = {
       name: e.target.value,
     }
-    console.log(replyTxt)
+    console.log(e.target.value)
     setReplyMode({ ...replyMode, editReply: e.target.value })
-    console.log(replyMode.editReply)
   }
 
   //新增資料
@@ -220,21 +221,20 @@ const List = () => {
     if (review.reviewText !== '') {
       axios
         .post(api, {
-          id: review.id,
+          id: id,
           book: review.book,
           reviewText: review.reviewText,
           star: review.star,
         })
         .then(res => {
           swal('新增成功', '', 'success').then(value => {
-            setTimeout(() => {
-              window.location.reload()
-            }, 100)
+            reviewList()
           })
         })
 
         .catch(error => {
           setReview({
+            ...review,
             error: true,
             submitSuccess: false,
           })
@@ -251,20 +251,19 @@ const List = () => {
     if (user.isLogin) {
       axios
         .post(api, {
-          id: review.id,
+          id: id,
           review_sid: reviewID,
           reply: replyMode.editReply,
         })
         .then(res => {
           swal('新增成功', '', 'success').then(value => {
-            setTimeout(() => {
-              window.location.reload()
-            }, 100)
+            replyText()
           })
         })
 
         .catch(error => {
           setReview({
+            ...review,
             error: true,
             submitSuccess: false,
           })
@@ -291,14 +290,16 @@ const List = () => {
       })
       .then(res => {
         swal('修改成功!').then(value => {
-          setTimeout(() => {
-            window.location.reload()
-          }, 100)
+          reviewList()
+          replyText()
+          setReview({ isEdit: false })
+          setReplyMode({ isEdit: false })
         })
       })
 
       .catch(error => {
         setReview({
+          ...review,
           error: true,
           submitSuccess: false,
         })
@@ -326,9 +327,8 @@ const List = () => {
           icon: 'success',
         }).then(value => {
           axios.delete(api)
-          setTimeout(() => {
-            window.location.reload()
-          }, 100)
+          reviewList()
+          replyText()
         })
       } else {
         swal('已取消刪除!')
@@ -354,9 +354,8 @@ const List = () => {
           icon: 'success',
         }).then(value => {
           axios.delete(api)
-          setTimeout(() => {
-            window.location.reload()
-          }, 100)
+          reviewList()
+          replyText()
         })
       } else {
         swal('已取消刪除!')
@@ -377,7 +376,7 @@ const List = () => {
     if (user.isLogin) {
       axios
         .post(api, {
-          number: review.id,
+          number: id,
           isbn: ISBN,
         })
         .then(res => {
@@ -404,26 +403,24 @@ const List = () => {
     <>
       <All>
         <Nav />
-        <Main>
+        <section className="reviews_Main">
           {List.map(data => (
-            <Book key={data.sid}>
-              <BookColumn>
+            <div className="reviews_Book" key={data.sid}>
+              <div className="reviews_column">
                 <img
                   className="reviews_list_img"
                   key={data.sid}
                   src={`http://localhost:5555/images/books/${data.pic}`}
                 />
-              </BookColumn>
-              <BookColumn>
-                <BookInfo>
+              </div>
+              <div className="reviews_column2">
+                <div className="reviews_bookInfo">
                   <h3>{data.name}</h3>
-                  {'作者:'}&nbsp;
-                  <span style={{ opacity: 0.6 }}>{data.author}</span>
-                  &nbsp;&nbsp;&nbsp;
-                  {'出版社:'}&nbsp;
+                  <span>作者:</span>
+                  <span className="reviews_author" style={{ opacity: 0.6 }}>{data.author}</span>
+                  <span className="reviews_author">出版社:</span>
                   <span style={{ opacity: 0.6 }}>{data.cp_name}</span>
-                  &nbsp;&nbsp;&nbsp;
-                  {'出版日期:'} &nbsp;
+                  <span className="reviews_author">出版日期:</span>
                   <span style={{ opacity: 0.6 }}>
                     {new Intl.DateTimeFormat('zh-TW', {
                       year: 'numeric',
@@ -437,16 +434,16 @@ const List = () => {
                   <br />
                   <br />
                   {'內容簡介:'}
-                  <div>
+                  <div className="reviews_info">
                     {data.introduction
                       .replace(/<[^>]*>/g, '')
                       .replace(/&nbsp;/g, '')
                       .replace(/&hellip;/g, '')
                       .replace(/&bull;/g, '')}
                   </div>
-                </BookInfo>
-              </BookColumn>
-            </Book>
+                </div>
+              </div>
+            </div>
           ))}
           {user.isLogin ? (
             <div className="reviews_recommendText">推薦書籍</div>
@@ -470,23 +467,23 @@ const List = () => {
               </Link>
             ))}
           </div>
-
+          {/* <div className="reviews_BookColumnScore"> */}
           {user.isLogin ? (
-            <BookColumnScore>
+            <div className="reviews_BookColumnScore">
               <Link to={`/books/information/${urlParams}`}>
                 <button style={{ outline: 0 }} className="reviews_BookBuy">
                   立即購買
                 </button>
               </Link>
-              <BookRow>
+              <div className="reviews_row">
                 <BookScoreAndLine List={List} />
-              </BookRow>
+              </div>
               <form onSubmit={addCase}>
                 <button type="submit" className="reviews_BookCase">
                   加入書櫃
                 </button>
               </form>
-            </BookColumnScore>
+            </div>
           ) : (
             <BookColumnScore2>
               <Link to={`/books/information/${urlParams}`}>
@@ -494,9 +491,9 @@ const List = () => {
                   立即購買
                 </button>
               </Link>
-              <BookRow2>
+              {/* <BookRow2>
                 <BookScoreAndLine List={List} />
-              </BookRow2>
+              </BookRow2> */}
               <form onSubmit={addCase}>
                 <button type="submit" className="reviews_BookCase">
                   加入書櫃
@@ -505,9 +502,9 @@ const List = () => {
             </BookColumnScore2>
           )}
           <h3 className="reviews_push">發表評論</h3>
-          <Review>
-            <BookColumnMember>
-              <Member>
+          <section className="reviews_container">
+            <div className="reviews_BookColumnMember">
+              <div className="reviews_MemberIcon">
                 {user.isLogin ? (
                   <img
                     className="reviews_member_img"
@@ -517,8 +514,8 @@ const List = () => {
                   ''
                 )}
                 <h6 className="reviews_member_nickname">{user.MR_nickname}</h6>
-              </Member>
-            </BookColumnMember>
+              </div>
+            </div>
             {user.isLogin ? (
               <form className="reviews_form" onSubmit={submitHandler}>
                 <textarea
@@ -553,23 +550,23 @@ const List = () => {
                 </h6>
               </form>
             )}
-          </Review>
+          </section>
           {memberReview.map((data, index) => (
-            <Review key={index}>
-              <BookColumnMember>
-                <Member>
+            <section className="reviews_container" key={index}>
+              <div className="reviews_BookColumnMember">
+                <div className="reviews_MemberIcon">
                   <img
                     className="reviews_memberReview_img"
                     src={`http://localhost:5555/images/member/${data.MR_pic}`}
                   />
-                </Member>
-              </BookColumnMember>
+                </div>
+              </div>
               <div className="reviews_member_text">
-                <BookRow>
+                <div className="reviews_row">
                   <BookScoreForMember score_star={data.star} />
                   {data.MR_levelName}
-                </BookRow>
-                <BookRow>
+                </div>
+                <div className="reviews_row">
                   <h6 className="reviews_member_nickname">
                     {data.MR_nickname}
                   </h6>
@@ -584,7 +581,7 @@ const List = () => {
                       .format(new Date(data.create_time))
                       .replace(/\//g, '-')}
                   </div>
-                </BookRow>
+                </div>
                 <br />
                 {review.isEdit && data.sid === review.sid ? (
                   <form onSubmit={updateHandler}>
@@ -638,7 +635,7 @@ const List = () => {
                           {item.reply_text}
                         </div>
                       )}
-                      {item.member == review.id ? (
+                      {item.member == id ? (
                         <>
                           {replyMode.isEdit &&
                           replyMode.sid === item.reply_sid ? (
@@ -705,8 +702,8 @@ const List = () => {
                   ''
                 )}
               </div>
-              {review.id === data.member ? (
-                <div>
+              {id === data.member ? (
+                <div className="reviews_row2">
                   {review.isEdit && data.sid === review.sid ? (
                     <>
                       <FontAwesomeIcon
@@ -751,9 +748,9 @@ const List = () => {
               ) : (
                 ''
               )}
-            </Review>
+            </section>
           ))}
-        </Main>
+        </section>
       </All>
     </>
   )

@@ -13,25 +13,23 @@ const db = mysql.createConnection({
 });
 db.connect();
 bluebird.promisifyAll(db);
-//書本單筆資料
-router.get("/book_reviews/:sid?", (req, res) => {
-  let sid = req.params.sid;
-  console.log(req.query.id);
-  const sql = `SELECT vb_books.*,cp_data_list.cp_name FROM vb_books LEFT JOIN cp_data_list ON vb_books.publishing = cp_data_list.sid WHERE vb_books.sid = ${sid}`;
-  db.query(sql, (error, results) => {
-    if (error) {
-      return res.send(error);
-    } else {
-      return res.json({
-        data: results
-      });
-    }
-  });
-});
 
-//書本評分資料
-// router.get("/book_ratings", (req, res) => {
-//   const sql = `SELECT star,book FROM vb_ratings WHERE 1`;
+//書本單筆資料p
+// router.get("/book_reviews/:sid?", (req, res) => {
+//   let sid = req.params.sid;
+//   let fiveStars = [],
+//     fourStars = [],
+//     threeStars = [],
+//     twoStars = [],
+//     oneStars = [],
+//     max = [],
+//     min = [],
+//     avg = [],
+//     totalStars = [],
+//     message = [],
+//     output={}
+//   console.log(req.query.id);
+//   const sql = `SELECT vb_books.*,cp_data_list.cp_name FROM vb_books LEFT JOIN cp_data_list ON vb_books.publishing = cp_data_list.sid WHERE vb_books.sid = ${sid}`;
 //   db.query(sql, (error, results) => {
 //     if (error) {
 //       return res.send(error);
@@ -42,7 +40,8 @@ router.get("/book_reviews/:sid?", (req, res) => {
 //     }
 //   });
 // });
-router.get(`/book_ratings/?`, (req, res) => {
+
+router.get(`/?`, (req, res) => {
   let c,
     a,
     s,
@@ -80,26 +79,23 @@ router.get(`/book_ratings/?`, (req, res) => {
   output.c = c;
   output.page = page;
   output.perPage = perPage;
-  // sql = `SELECT COUNT(1) total FROM vb_ratings WHERE 1 `;
-  sql = `SELECT COUNT(1) total FROM vb_books LEFT JOIN vb_ratings ON vb_books.sid=vb_ratings.book WHERE categories ${c}`;
+  output.search = s;
+  console.log(urlpart);
+  sql = `SELECT COUNT(1) total FROM vb_books LEFT JOIN vb_ratings ON vb_books.sid=vb_ratings.book WHERE categories ${c} AND name LIKE '%${s}%'`;
   db.queryAsync(sql)
     .then(results => {
       output.total = results[0]["total"];
       return db.queryAsync(
-        `SELECT COUNT(1) total FROM vb_books WHERE categories ${c}`
+        `SELECT COUNT(1) total FROM vb_books WHERE categories ${c} AND name LIKE '%${s}%'`
       );
     })
-    // .then(results => {
-    //   output.totalRows = results[0]["total"]; //總筆數
-    //   output.totalPage = Math.ceil(output.totalRows / perPage); //總頁數
-    //   return db.queryAsync(
-    //     `SELECT * FROM vb_books WHERE 1 LIMIT ${(page - 1) *
-    //       perPage},${perPage}`
-    //   );
-    // })
     .then(results => {
       output.totalRows = results[0]["total"]; //總筆數
       output.totalPage = Math.ceil(output.totalRows / perPage); //總頁數
+      if (output.totalPage == 0) return;
+      if (page <= 1) page = 1;
+      if (page >= output.totalPage) page = output.totalPage;
+      output.page = page;
       return db.queryAsync(
         `SELECT vb_books.*,cp_data_list.cp_name FROM vb_books,cp_data_list WHERE categories ${c} AND name LIKE '%${s}%' AND vb_books.publishing = cp_data_list.sid ORDER BY sid DESC LIMIT ${(page -
           1) *
@@ -109,7 +105,7 @@ router.get(`/book_ratings/?`, (req, res) => {
     .then(results => {
       output.rows = results;
       return db.queryAsync(
-        `SELECT vb_books.*,vb_ratings.star FROM vb_books LEFT JOIN vb_ratings ON vb_books.sid=vb_ratings.book WHERE categories ${c}`
+        `SELECT vb_books.*,vb_ratings.star FROM vb_books LEFT JOIN vb_ratings ON vb_books.sid=vb_ratings.book WHERE categories ${c} AND name LIKE '%${s}%'`
       );
     })
     .then(results => {
@@ -187,8 +183,9 @@ router.get(`/book_ratings/?`, (req, res) => {
       } else if (page == output.totalPage) {
         f = output.totalRows % output.perPage;
         if (f === 0) {
-          f =+ 10;
+          f = +10;
         }
+        console.log(f);
         for (let j = 0; j < f; j++) {
           fiveStars[j] = 0;
           fourStars[j] = 0;

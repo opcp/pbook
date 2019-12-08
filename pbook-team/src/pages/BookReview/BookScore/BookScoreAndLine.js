@@ -38,89 +38,8 @@ const StyledRating = withStyles({
 })(Rating)
 
 const BookScore = props => {
-  const [bs, setBs] = useState([])
   const { List } = props
-  useEffect(() => {
-    star()
-  }, [])
-
-  //資料ajax
-  const star = () => {
-    axios.get('http://localhost:5555/reviews/book_ratings').then(res => {
-      setBs(res.data.data)
-    }, [])
-  }
-
-  let fiveStars = [],
-    fourStars = [],
-    threeStars = [],
-    twoStars = [],
-    oneStars = [],
-    max = [],
-    min = [],
-    avg = []
-
   const classes = useStyles()
-  function countRate(bs) {
-    for (let j = 1; j <= 1002; j++) {
-      fiveStars[j] = 0
-      fourStars[j] = 0
-      threeStars[j] = 0
-      twoStars[j] = 0
-      oneStars[j] = 0
-      for (let i = 0; i < bs.length; i++) {
-        if (bs[i].book === j) {
-          switch (bs[i].star) {
-            case 5:
-              fiveStars[j]++
-              break
-            case 4:
-              fourStars[j]++
-              break
-            case 3:
-              threeStars[j]++
-              break
-            case 2:
-              twoStars[j]++
-              break
-            case 1:
-              oneStars[j]++
-              break
-            default:
-              break
-          }
-        }
-      }
-    }
-    for (let j = 1; j <= 1002; j++) {
-      avg[j] = (
-        (fiveStars[j] * 5 +
-          fourStars[j] * 4 +
-          threeStars[j] * 3 +
-          twoStars[j] * 2 +
-          oneStars[j]) /
-        (fiveStars[j] +
-          fourStars[j] +
-          threeStars[j] +
-          twoStars[j] +
-          oneStars[j])
-      ).toFixed(1)
-      max[j] = fiveStars[j]
-      min[j] = fiveStars[j]
-      if (fourStars[j] > max[j]) max[j] = fourStars[j]
-      else if (fourStars[j] < min[j]) min[j] = fourStars[j]
-
-      if (threeStars[j] > max[j]) max[j] = threeStars[j]
-      else if (threeStars[j] < min[j]) min[j] = threeStars[j]
-
-      if (twoStars[j] > max[j]) max[j] = twoStars[j]
-      else if (twoStars[j] < min[j]) min[j] = twoStars[j]
-
-      if (oneStars[j] > max[j]) max[j] = oneStars[j]
-      else if (oneStars[j] < min[j]) min[j] = oneStars[j]
-    }
-  }
-  countRate(bs)
 
   return (
     <div>
@@ -134,7 +53,7 @@ const BookScore = props => {
                   className={classes.margin}
                   variant="determinate"
                   color="secondary"
-                  value={(fiveStars[data.sid] / max[data.sid]) * 100}
+                  value={(data.fiveStars / data.max) * 100}
                 />
               </div>
               <div className="d-flex">
@@ -143,7 +62,7 @@ const BookScore = props => {
                   className={classes.margin}
                   variant="determinate"
                   color="secondary"
-                  value={(fourStars[data.sid] / max[data.sid]) * 100}
+                  value={(data.fourStars / data.max) * 100}
                 />
               </div>
               <div className="d-flex">
@@ -152,7 +71,7 @@ const BookScore = props => {
                   className={classes.margin}
                   variant="determinate"
                   color="secondary"
-                  value={(threeStars[data.sid] / max[data.sid]) * 100}
+                  value={(data.threeStars / data.max) * 100}
                 />
               </div>
               <div className="d-flex">
@@ -161,7 +80,7 @@ const BookScore = props => {
                   className={classes.margin}
                   variant="determinate"
                   color="secondary"
-                  value={(twoStars[data.sid] / max[data.sid]) * 100}
+                  value={(data.twoStars / data.max) * 100}
                 />
               </div>
               <div className="d-flex">
@@ -170,17 +89,17 @@ const BookScore = props => {
                   className={classes.margin}
                   variant="determinate"
                   color="secondary"
-                  value={(oneStars[data.sid] / max[data.sid]) * 100}
+                  value={(data.oneStars / data.max) * 100}
                 />
               </div>
             </div>
           </div>
           <div className="reviews_col2">
-            <span style={{ fontSize: '2rem' }}>{avg[data.sid]}</span>
+            <span style={{ fontSize: '2rem' }}>{data.avg}</span>
             <Box component="fieldset" mt={0} borderColor="transparent">
               <StyledRating
                 name="customized-color"
-                value={avg[data.sid]}
+                value={data.avg}
                 precision={0.1}
                 readOnly
                 size="small"
@@ -188,11 +107,7 @@ const BookScore = props => {
               />
             </Box>
             <span>
-              {fiveStars[data.sid] +
-                fourStars[data.sid] +
-                threeStars[data.sid] +
-                twoStars[data.sid] +
-                oneStars[data.sid]}
+              {data.message}
               篇評論
             </span>
           </div>
