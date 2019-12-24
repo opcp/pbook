@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import styled from '@emotion/styled'
 import BookScoreAndLine from './BookScore/BookScoreAndLine'
@@ -57,12 +57,15 @@ const List = () => {
   const [reviewID, setReviewID] = useState(1)
   //書評回覆內容更新
   let replyTxt
+  const [rept, SetRept] = useState('')
   //書評回覆CRUD狀態
   const [replyMode, setReplyMode] = useState({
     isEdit: false,
     sid: '',
     editReply: '',
   })
+  const ReplyRef = useRef()
+
   useEffect(() => {
     bookList()
     reviewList()
@@ -76,20 +79,23 @@ const List = () => {
       })
       getID(data.MR_number)
       recommend(data.MR_number)
-      console.log(data.MR_number)
     }
   }, [])
-  console.log(review.id)
   //書評分頁資料ajax
   const bookList = async () => {
     await axios
       .get(`http://localhost:5555/books/book_info/${urlParams}`)
       .then(res => {
         let data = res.data.rows[0]
-        console.log(res.data.rows)
         setList(res.data.rows)
         setISBN(data.isbn)
-        setReview({ ...review, isbn: data.isbn, pic: data.pic })
+        setReview({
+          ...review,
+          isbn: data.isbn,
+          pic: data.pic,
+          reviewText: '',
+          star: 1,
+        })
       })
       .catch(error => {
         console.log(error)
@@ -133,9 +139,11 @@ const List = () => {
       [e.target.name]: e.target.value,
     })
     setReviewID(e.target.name)
-    replyTxt = {
-      name: e.target.value,
-    }
+    // replyTxt = {
+    //   name: e.target.value,
+    // }
+    replyTxt = e.target.name
+    SetRept({ replyTxt: e.target.value })
     console.log(e.target.value)
     setReplyMode({ ...replyMode, editReply: e.target.value })
   }
@@ -157,6 +165,7 @@ const List = () => {
         .then(res => {
           swal('新增成功', '', 'success').then(value => {
             reviewList()
+            bookList()
           })
         })
 
@@ -186,6 +195,7 @@ const List = () => {
         .then(res => {
           swal('新增成功', '', 'success').then(value => {
             replyText()
+            clear()
           })
         })
 
@@ -218,12 +228,12 @@ const List = () => {
       })
       .then(res => {
         swal('修改成功!').then(value => {
+          setReview({ isEdit: false })
           reviewList()
           replyText()
-          setReview({ isEdit: false })
-          setReplyMode({ isEdit: false })
         })
       })
+      .then(setReplyMode({ isEdit: false }))
 
       .catch(error => {
         setReview({
@@ -243,7 +253,6 @@ const List = () => {
     } else {
       api = `http://localhost:5555/reviews/deleteReview/${delete_data}`
     }
-    console.log(delete_data)
     swal({
       title: '確定刪除嗎?',
       icon: 'warning',
@@ -251,13 +260,16 @@ const List = () => {
       dangerMode: true,
     }).then(willDelete => {
       if (willDelete) {
+        axios.delete(api)
         swal('刪除成功!', '', {
           icon: 'success',
-        }).then(value => {
-          axios.delete(api)
-          reviewList()
-          replyText()
         })
+          .then(value => {
+            bookList()
+            reviewList()
+            replyText()
+          })
+          .then(console.log('123'))
       } else {
         swal('已取消刪除!')
       }
@@ -269,8 +281,6 @@ const List = () => {
     let delete_data = e
     let api
     api = `http://localhost:5555/reviews/reply/DeleteData/${delete_data}`
-
-    console.log(delete_data)
     swal({
       title: '確定刪除嗎?',
       icon: 'warning',
@@ -278,10 +288,10 @@ const List = () => {
       dangerMode: true,
     }).then(willDelete => {
       if (willDelete) {
+        axios.delete(api)
         swal('刪除成功!', '', {
           icon: 'success',
         }).then(value => {
-          axios.delete(api)
           reviewList()
           replyText()
         })
@@ -323,10 +333,12 @@ const List = () => {
   const replyText = async () => {
     await axios.get(`http://localhost:5555/reviews/reply/`).then(res => {
       setReply(res.data.reply)
-      console.log(res.data)
     })
   }
-
+  const clear = () => {
+    setReview({ reviewText: '' })
+    SetRept({ name: '' })
+  }
   return (
     <>
       <All>
@@ -620,7 +632,7 @@ const List = () => {
                 {user.isLogin ? (
                   <form onSubmit={submitHandler2} key={index}>
                     <textarea
-                      value={replyTxt}
+                      value={rept.name}
                       onChange={changeHandler}
                       name={data.sid}
                       placeholder="回覆此書評"
