@@ -139,9 +139,6 @@ const List = () => {
       [e.target.name]: e.target.value,
     })
     setReviewID(e.target.name)
-    // replyTxt = {
-    //   name: e.target.value,
-    // }
     replyTxt = e.target.name
     SetRept({ replyTxt: e.target.value })
     console.log(e.target.value)
