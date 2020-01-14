@@ -64,7 +64,6 @@ const List = () => {
     sid: '',
     editReply: '',
   })
-  const ReplyRef = useRef()
 
   useEffect(() => {
     bookList()

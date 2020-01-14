@@ -75,13 +75,6 @@ function Bookinfo() {
     width: 1200px;
   `
 
-  //右上排列方式欄位
-  const OptionBar = styled.div`
-    display: flex;
-    flex-direction: row-reverse;
-    margin: 50px 200px 0px 0;
-  `
-
   // 書本外框
   const Book = styled.section`
     display: flex;
@@ -117,47 +110,6 @@ function Bookinfo() {
   const close = () => {
     setSb({ isSearch: false })
   }
-  // const search_page = (e) => {
-  //   console.log(e.target.value)
-  //   console.log(s)
-  //   console.log(word)
-  //   axios
-  //     .get(`http://localhost:5555/reviews?s=${word}&p=${s}`)
-  //     .then(res => {
-  //       console.log(res.data)
-  //     })
-  //     .catch(error => {
-  //       console.log(error)
-  //     })
-  // }
-
-  // useEffect(() => {
-  //   bookInfo()
-  //   categoryBar()
-  //   star()
-  // }, [array, c, p])
-
-  // const star = async () => {
-  //   await axios.get('http://localhost:5555/reviews/book_ratings').then(res => {
-  //     setBs(res.data.data)
-  //   }, [])
-  // }
-
-  // const bookInfo = async e => {
-  //   if (e == undefined) {
-  //     e = ''
-  //   }
-  //   await axios
-  //     .get(`http://localhost:5555/reviews/?${c}a=${array}&p=${p}&s=${e}`)
-  //     .then(res => {
-  //       setBookInformation(res.data.rows)
-  //       getPage(Math.ceil(res.data.total / 20))
-  //       console.log(res.data)
-  //     })
-  //     .catch(error => {
-  //       console.log(error)
-  //     })
-  // }
   if (!sb.isSearch) {
     for (let i = 1; i <= Math.ceil(book.totalRows / 10); i++) {
       pageNum.push(
@@ -193,18 +145,6 @@ function Bookinfo() {
     }
   }
 
-  // const callback = useCallback(() => {
-  //   return book.rows
-  // }, [book.rows])
-
-  // const callback2 = useCallback(() => {
-  //   return bs.data
-  // }, [bs.data])
-
-  // const callback3 = useCallback(() => {
-  //   return categorys
-  // }, [categorys])
-
   return (
     <>
       <section className="reviews_MainPage">
@@ -213,20 +153,6 @@ function Bookinfo() {
         </div>
         <Main>
           <Category close={close} />
-          {/* <OptionBar>
-            <select
-              onChange={e => {
-                setArray(e.target.value)
-              }}
-              value={array}
-              name="array"
-            >
-              <option value="1">討論度(高>低)</option>
-              <option value="2">上市日期(新>舊)</option>
-              <option value="3">暢銷度</option>
-            </select>
-          </OptionBar> */}
-
           {!sb.isSearch ? (
             <Book>
               <BooksData book={book.rows} />
